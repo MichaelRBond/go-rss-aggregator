@@ -1,0 +1,12 @@
+[mysql]
+server = "localhost"
+port = 3306
+database = "go_rss_aggregator"
+user = "go"
+password = "go"
+
+[dbmigrations]
+files = "db-migrations/"
+
+[server]
+port = 3000
