@@ -3,6 +3,7 @@
 *.dll
 *.so
 *.dylib
+.go-rss-aggregator
 
 # Test binary, build with `go test -c`
 *.test
@@ -16,5 +17,4 @@
 # Should this be ignored?
 vendor/
 
-# ignore the binary file
-.go-rss-aggregator
+docker-data/volumes/
