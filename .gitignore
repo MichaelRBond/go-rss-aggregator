@@ -15,3 +15,6 @@
 
 # Should this be ignored?
 vendor/
+
+# ignore the binary file
+.go-rss-aggregator
