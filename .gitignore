@@ -18,3 +18,5 @@
 vendor/
 
 docker-data/volumes/
+
+go-rss-aggregator
