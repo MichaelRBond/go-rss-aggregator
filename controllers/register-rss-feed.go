@@ -20,9 +20,7 @@ func RegisterRssFeed(res http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		response := apiResponses.ErrorInternalServer()
-		responseBytes, _ := json.Marshal(response)
-		res.WriteHeader(response.Meta.StatusCode)
-		res.Write(responseBytes)
+		apiResponses.Send(response, res)
 		return
 	}
 
@@ -30,6 +28,5 @@ func RegisterRssFeed(res http.ResponseWriter, req *http.Request) {
 	// if err
 
 	response := apiResponses.OkMsg("Successfully added RSS feed.")
-	responseBytes, _ := json.Marshal(response)
-	res.Write(responseBytes)
+	apiResponses.Send(response, res)
 }

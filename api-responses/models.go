@@ -1,5 +1,15 @@
 package apiResponses
 
+import (
+	"encoding/json"
+)
+
+// APIResponse is a common interface for API Responses
+type APIResponse interface {
+	getStatusCode() int
+	toJSON() []byte
+}
+
 // APIResponseDefault is a standard response
 type APIResponseDefault struct {
 	Meta APIResponseMeta
@@ -48,4 +58,24 @@ func buildAPIResponseMetaWithError(statusCode int, errorID string, errorDescript
 			Description: errorDescription,
 		},
 	}
+}
+
+// ToJSON converts a APIResponseDefault to json
+func (api APIResponseDefault) toJSON() []byte {
+	responseBytes, _ := json.Marshal(api)
+	return responseBytes
+}
+
+func (api APIResponseDefault) getStatusCode() int {
+	return api.Meta.StatusCode
+}
+
+// ToJSON converts a APIResponseDefaultError to json
+func (api APIResponseDefaultError) toJSON() []byte {
+	responseBytes, _ := json.Marshal(api)
+	return responseBytes
+}
+
+func (api APIResponseDefaultError) getStatusCode() int {
+	return api.Meta.StatusCode
 }
