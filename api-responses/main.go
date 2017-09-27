@@ -20,6 +20,14 @@ func ErrorInternalServer() *APIResponseDefaultError {
 	}
 }
 
+// ErrorBadRequest returns a 400 status code with provided error message
+func ErrorBadRequest(message string) *APIResponseDefaultError {
+	return &APIResponseDefaultError{
+		Meta: buildAPIResponseMetaWithError(400, "BadRequest", message),
+		Data: APIResponseMessage{"Bad Request"},
+	}
+}
+
 // Send writes the response
 func Send(apiResponse APIResponse, res http.ResponseWriter) {
 	res.WriteHeader(apiResponse.getStatusCode())
