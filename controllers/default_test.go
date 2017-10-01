@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultHandler(t *testing.T) {
+func Test_DefaultHandler(t *testing.T) {
 	assert := assert.New(t)
 
 	resp := httptest.NewRecorder()
