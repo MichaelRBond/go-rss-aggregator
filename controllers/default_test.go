@@ -18,7 +18,7 @@ func Test_DefaultHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	DefaultHandler(resp, req)
+	DefaultHandler(resp, req, nil)
 
 	result, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

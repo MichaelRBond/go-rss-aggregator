@@ -56,7 +56,7 @@ func Test_RegisterRssFeed_ValidInput(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	RegisterRssFeed(resp, req)
+	RegisterRssFeed(resp, req, nil)
 	assert.Equal(resp.Code, 200)
 }
 
@@ -68,7 +68,7 @@ func Test_RegisterRssFeed_NoInput(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	RegisterRssFeed(resp, req)
+	RegisterRssFeed(resp, req, nil)
 	result, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		t.Fail()

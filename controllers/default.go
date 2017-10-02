@@ -7,7 +7,7 @@ import (
 )
 
 // DefaultHandler renders the hompage
-func DefaultHandler(res http.ResponseWriter, req *http.Request) {
+func DefaultHandler(res http.ResponseWriter, req *http.Request, context *Context) {
 	response := apiResponses.OkMsg("default handler 1234")
 	apiResponses.Send(response, res)
 }

@@ -15,8 +15,7 @@ type apiRegisterPayload struct {
 }
 
 // RegisterRssFeed registers a RSS feed
-func RegisterRssFeed(res http.ResponseWriter, req *http.Request) {
-
+func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *Context) {
 	decoder := json.NewDecoder(req.Body)
 	var feed apiRegisterPayload
 	err := decoder.Decode(&feed)

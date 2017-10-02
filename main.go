@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/michaelrbond/go-rss-aggregator/configuration"
+	"github.com/michaelrbond/go-rss-aggregator/controllers"
 	"github.com/michaelrbond/go-rss-aggregator/database-utils"
 )
 
@@ -19,7 +20,9 @@ func main() {
 	fmt.Printf("Performing Database Migrations\n")
 	databaseUtils.Migrate(db, config.Dbmigrations.Files)
 
-	router := DefineRoutes()
+	context := &controllers.Context{Config: config, Db: db}
+
+	router := DefineRoutes(context)
 	http.Handle("/", router)
 	fmt.Printf("Listening on port %d\n", config.Server.Port)
 	http.ListenAndServe(fmt.Sprintf(":%d", config.Server.Port), nil)
