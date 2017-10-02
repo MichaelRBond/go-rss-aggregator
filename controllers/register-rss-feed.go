@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 
@@ -37,7 +38,14 @@ func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *Contex
 		return
 	}
 
-	// TODO : Save to database
+	// TODO : check for duplicates - Need to set field to unique in the database
+	_, err = context.Db.Query("INSERT INTO `feeds` (`title`, `url`) VALUES(?, ?);", feed.Title, feed.URL)
+	if err != nil {
+		log.Println("Error saving new feed: %s", err.Error())
+		response := apiResponses.ErrorInternalServer()
+		apiResponses.Send(response, res)
+		return
+	}
 
 	response := apiResponses.OkMsg("Successfully added RSS feed.")
 	apiResponses.Send(response, res)
