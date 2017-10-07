@@ -6,13 +6,15 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/michaelrbond/go-rss-aggregator/errors"
+	"go.uber.org/zap"
 )
 
 // Config is the configuration type
 type Config struct {
+	Dbmigrations dbmigrations
+	Logger       zap.Config
 	Mysql        MysqlConfig
 	Server       server
-	Dbmigrations dbmigrations
 }
 
 type dbmigrations struct {
@@ -44,14 +46,8 @@ func GetConfig() Config {
 	if configEnv == "" {
 		configEnv = "local"
 	}
-	if _, err := toml.DecodeFile(fmt.Sprintf("configuration/%s.toml", configEnv), &config); err != nil {
-		errors.Handle(err)
-	}
-	return config
-}
+	_, err := toml.DecodeFile(fmt.Sprintf("configuration/%s.toml", configEnv), &config)
+	errors.Handle(err)
 
-// GetSecret returns the key provided
-func GetSecret(s string) string {
-	fmt.Printf("Closing Database connection\n")
-	return os.Getenv(s)
+	return config
 }

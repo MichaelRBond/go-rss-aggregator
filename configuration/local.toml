@@ -10,3 +10,13 @@ files = "db-migrations/"
 
 [server]
 port = 3000
+
+[logger]
+level = "debug"
+encoding = "json"
+outputPaths = ["stdout"]
+errorOutputPaths = ["stderr"]
+
+[logger.encoderconfig]
+messageKey = "message"
+levelEncoder = "lowercase"
