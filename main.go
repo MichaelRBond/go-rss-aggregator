@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/michaelrbond/go-rss-aggregator/configuration"
 	"github.com/michaelrbond/go-rss-aggregator/controllers"
 	"github.com/michaelrbond/go-rss-aggregator/database-utils"
 	"github.com/michaelrbond/go-rss-aggregator/logger"
+	"github.com/michaelrbond/go-rss-aggregator/syncEngine"
 )
 
 func main() {
@@ -26,5 +28,12 @@ func main() {
 	router := DefineRoutes(context)
 	http.Handle("/", router)
 	logger.Info(fmt.Sprintf("Listening on port %d", config.Server.Port))
-	http.ListenAndServe(fmt.Sprintf(":%d", config.Server.Port), nil)
+	go http.ListenAndServe(fmt.Sprintf(":%d", config.Server.Port), nil)
+
+	syncEngineTicker := time.NewTicker(config.SyncEngine.IntervalInSeconds * time.Second)
+	for range syncEngineTicker.C {
+		syncEngine.SyncRssFeeds()
+	}
+
+	// TODO : Catch SIGINT and clean up syncEngineTicker
 }

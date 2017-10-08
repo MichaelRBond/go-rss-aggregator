@@ -20,3 +20,6 @@ errorOutputPaths = ["stderr"]
 [logger.encoderconfig]
 messageKey = "message"
 levelEncoder = "lowercase"
+
+[syncEngine]
+intervalInSeconds = 600

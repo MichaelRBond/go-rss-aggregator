@@ -3,6 +3,7 @@ package configuration
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/michaelrbond/go-rss-aggregator/errors"
@@ -14,6 +15,7 @@ type Config struct {
 	Dbmigrations dbmigrations
 	Logger       zap.Config
 	Mysql        MysqlConfig
+	SyncEngine   syncEngineConfig
 	Server       server
 }
 
@@ -32,6 +34,10 @@ type MysqlConfig struct {
 
 type server struct {
 	Port int
+}
+
+type syncEngineConfig struct {
+	IntervalInSeconds time.Duration
 }
 
 // TODO: Is there a better way to do this in Go?
