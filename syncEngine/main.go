@@ -7,8 +7,8 @@ import (
 	"github.com/mmcdole/gofeed"
 
 	"github.com/michaelrbond/go-rss-aggregator/logger"
-	"github.com/michaelrbond/go-rss-aggregator/utils"
 	"github.com/michaelrbond/go-rss-aggregator/types"
+	"github.com/michaelrbond/go-rss-aggregator/utils"
 )
 
 // SyncRssFeeds initiates the download
@@ -28,7 +28,7 @@ func SyncRssFeeds(context *types.Context) {
 		if err != nil {
 			continue
 		}
-		fmt.Printf("%s\n", feedContent.Title)
+		fmt.Printf("%+v\n", feedContent)
 		// -- save items to the database
 		// -- update the last sync in the database table
 	}

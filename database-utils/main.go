@@ -12,7 +12,7 @@ import (
 	_ "github.com/mattes/migrate/source/file"
 
 	"github.com/michaelrbond/go-rss-aggregator/configuration"
-	"github.com/michaelrbond/go-rss-aggregator/errors"
+	"github.com/michaelrbond/go-rss-aggregator/logger"
 )
 
 var database *sql.DB
@@ -25,10 +25,13 @@ func Migrate(db *sql.DB, migrationsPath string) {
 		"mysql",
 		driver,
 	)
-	errors.Handle(err)
-	err = m.Up()
-	if err != nil && err.Error() != "no change" {
-		errors.Handle(err)
+
+	if err != nil {
+		logger.Panic(fmt.Sprintf("Error starting DB Migration: %s\n", err.Error()))
+	}
+
+	if err = m.Up(); err != nil && err.Error() != "no change" {
+		logger.Panic(fmt.Sprintf("Error performing DB Migration: %s\n", err.Error()))
 	}
 }
 
@@ -44,7 +47,10 @@ func GetDatabase(config configuration.MysqlConfig) *sql.DB {
 		config.Port,
 		config.Database)
 	db, err := sql.Open("mysql", connectionStr)
-	errors.Handle(err)
+
+	if err != nil {
+		logger.Panic(fmt.Sprintf("Error getting database: %s\n", err.Error()))
+	}
 
 	database = db
 	return db

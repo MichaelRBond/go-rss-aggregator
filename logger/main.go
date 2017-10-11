@@ -1,10 +1,11 @@
 package logger
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/michaelrbond/go-rss-aggregator/configuration"
-	"github.com/michaelrbond/go-rss-aggregator/errors"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -40,13 +41,22 @@ func Error(msg string) {
 	log(logger.Error, msg, "error")
 }
 
+// Panic logs an error message and then terminates the program
+func Panic(msg string) {
+	GetLogger()
+	log(logger.Panic, msg, "panic")
+}
+
 // GetLogger gets. a. logger.
 func GetLogger() {
 	if logger != nil {
 		return
 	}
 	config := configuration.GetConfig()
-	l, err := config.Logger.Build()
-	errors.Handle(err)
-	logger = l
+	if l, err := config.Logger.Build(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting logger: %s\n", err.Error())
+		os.Exit(1)
+	} else {
+		logger = l
+	}
 }

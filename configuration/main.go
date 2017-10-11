@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/michaelrbond/go-rss-aggregator/errors"
 	"go.uber.org/zap"
 )
 
@@ -52,8 +51,10 @@ func GetConfig() Config {
 	if configEnv == "" {
 		configEnv = "local"
 	}
-	_, err := toml.DecodeFile(fmt.Sprintf("configuration/%s.toml", configEnv), &config)
-	errors.Handle(err)
+	if _, err := toml.DecodeFile(fmt.Sprintf("configuration/%s.toml", configEnv), &config); err != nil {
+		fmt.Fprintf(os.Stderr, "Error loading config: %s\n", err.Error())
+		os.Exit(1)
+	}
 
 	return config
 }
