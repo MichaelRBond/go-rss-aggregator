@@ -1,4 +1,4 @@
-package databaseUtils
+package utils
 
 import (
 	"database/sql"
@@ -17,8 +17,8 @@ import (
 
 var database *sql.DB
 
-// Migrate runs the MySQL migrationn scripts on startup
-func Migrate(db *sql.DB, migrationsPath string) {
+// DatabaseMigrate runs the MySQL migrationn scripts on startup
+func DatabaseMigrate(db *sql.DB, migrationsPath string) {
 	driver, _ := mysql.WithInstance(db, &mysql.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
 		fmt.Sprintf("file://%s", migrationsPath),
@@ -35,8 +35,8 @@ func Migrate(db *sql.DB, migrationsPath string) {
 	}
 }
 
-// GetDatabase returns an open database
-func GetDatabase(config configuration.MysqlConfig) *sql.DB {
+// DatabaseGet returns an open database
+func DatabaseGet(config configuration.MysqlConfig) *sql.DB {
 	if database != nil {
 		return database
 	}
@@ -56,7 +56,7 @@ func GetDatabase(config configuration.MysqlConfig) *sql.DB {
 	return db
 }
 
-// Close terminates a database connection
-func Close(db *sql.DB) {
+// DatabaseClose terminates a database connection
+func DatabaseClose(db *sql.DB) {
 	db.Close()
 }

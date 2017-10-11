@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/michaelrbond/go-rss-aggregator/configuration"
-	"github.com/michaelrbond/go-rss-aggregator/database-utils"
 	"github.com/michaelrbond/go-rss-aggregator/logger"
 	"github.com/michaelrbond/go-rss-aggregator/syncEngine"
 	"github.com/michaelrbond/go-rss-aggregator/types"
+	"github.com/michaelrbond/go-rss-aggregator/utils"
 )
 
 func main() {
@@ -17,11 +17,11 @@ func main() {
 	logger.Info("Starting Go-RSS-Aggregator")
 
 	logger.Info("Getting database connection")
-	db := databaseUtils.GetDatabase(config.Mysql)
-	defer databaseUtils.Close(db)
+	db := utils.DatabaseGet(config.Mysql)
+	defer utils.DatabaseClose(db)
 
 	logger.Info("Performing Database Migrations")
-	databaseUtils.Migrate(db, config.Dbmigrations.Files)
+	utils.DatabaseMigrate(db, config.Dbmigrations.Files)
 
 	context := &types.Context{Config: config, Db: db}
 
