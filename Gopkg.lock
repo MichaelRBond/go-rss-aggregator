@@ -8,6 +8,18 @@
   version = "v0.3.0"
 
 [[projects]]
+  name = "github.com/PuerkitoBio/goquery"
+  packages = ["."]
+  revision = "e1271ee34c6a305e38566ecd27ae374944907ee9"
+  version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/andybalholm/cascadia"
+  packages = ["."]
+  revision = "349dd0209470eabd9514242c688c403c0926d266"
+
+[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
@@ -36,6 +48,18 @@
   packages = [".","database","database/mysql","source","source/file"]
   revision = "035c07716cd373d88456ec4d701402df52584cb4"
   version = "v3.0.1"
+
+[[projects]]
+  name = "github.com/mmcdole/gofeed"
+  packages = [".","atom","extensions","internal/shared","rss"]
+  revision = "303223474e837398b2f8a265e5572958bb5568c0"
+  version = "v1.0.0-beta"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mmcdole/goxpp"
+  packages = ["."]
+  revision = "77e4a51a73ed99ee3f33c1474dc166866304acbd"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -67,9 +91,21 @@
   revision = "35aad584952c3e7020db7b839f6b102de6271f89"
   version = "v1.7.1"
 
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["html","html/atom","html/charset"]
+  revision = "a04bdaca5b32abe1c069418fb7088ae607de5bd0"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/text"
+  packages = ["encoding","encoding/charmap","encoding/htmlindex","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","encoding/unicode","internal/gen","internal/tag","internal/utf8internal","language","runes","transform","unicode/cldr"]
+  revision = "825fc78a2fd6fa0a5447e300189e3219e05e1f25"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "620bc5ec6d908b1ad352786093cd3af092257e1c46990625bf87fd88595b71fd"
+  inputs-digest = "94abb469f4d2f3af30901e86eb20b7355844c8f5e32ec7bd445d7700ac31d62f"
   solver-name = "gps-cdcl"
   solver-version = 1

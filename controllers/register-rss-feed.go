@@ -3,11 +3,12 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/michaelrbond/go-rss-aggregator/api-responses"
+	"github.com/michaelrbond/go-rss-aggregator/types"
+	"github.com/michaelrbond/go-rss-aggregator/utils"
 )
 
 type apiRegisterPayload struct {
@@ -16,7 +17,7 @@ type apiRegisterPayload struct {
 }
 
 // RegisterRssFeed registers a RSS feed
-func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *Context) {
+func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *types.Context) {
 	decoder := json.NewDecoder(req.Body)
 	var feed apiRegisterPayload
 	err := decoder.Decode(&feed)
@@ -38,10 +39,13 @@ func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *Contex
 		return
 	}
 
-	// TODO : check for duplicates - Need to set field to unique in the database
-	_, err = context.Db.Query("INSERT INTO `feeds` (`title`, `url`) VALUES(?, ?);", feed.Title, feed.URL)
+	registerFeed := types.RSSFeed{
+		Title: feed.Title,
+		URL:   feed.URL,
+	}
+
+	err = utils.SaveRSSFeedToDB(context, registerFeed)
 	if err != nil {
-		log.Println("Error saving new feed: %s", err.Error())
 		response := apiResponses.ErrorInternalServer()
 		apiResponses.Send(response, res)
 		return

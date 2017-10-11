@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/michaelrbond/go-rss-aggregator/configuration"
-	"github.com/michaelrbond/go-rss-aggregator/controllers"
 	"github.com/michaelrbond/go-rss-aggregator/database-utils"
 	"github.com/michaelrbond/go-rss-aggregator/logger"
 	"github.com/michaelrbond/go-rss-aggregator/syncEngine"
+	"github.com/michaelrbond/go-rss-aggregator/types"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 	logger.Info("Performing Database Migrations")
 	databaseUtils.Migrate(db, config.Dbmigrations.Files)
 
-	context := &controllers.Context{Config: config, Db: db}
+	context := &types.Context{Config: config, Db: db}
 
 	router := DefineRoutes(context)
 	http.Handle("/", router)
@@ -32,7 +32,7 @@ func main() {
 
 	syncEngineTicker := time.NewTicker(config.SyncEngine.IntervalInSeconds * time.Second)
 	for range syncEngineTicker.C {
-		syncEngine.SyncRssFeeds()
+		syncEngine.SyncRssFeeds(context)
 	}
 
 	// TODO : Catch SIGINT and clean up syncEngineTicker
