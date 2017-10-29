@@ -1,0 +1,1 @@
+ALTER TABLE `feeds` ADD COLUMN `lastUpdated` INT(11) NOT NULL DEFAULT 0;

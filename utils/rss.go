@@ -26,25 +26,23 @@ func RSSGetAllFeedsFromDB(context *types.Context) ([]types.RSSFeed, error) {
 	return feeds, nil
 }
 
-// SaveRSSFeedToDB saves a types.RSSFeed to the database
-func SaveRSSFeedToDB(context *types.Context, feed types.RSSFeed) error {
-
-	// TODO : check for duplicates - Need to set field to unique in the database
-	_, err := context.Db.Query("INSERT INTO `feeds` (`title`, `url`) VALUES(?, ?);", feed.Title, feed.URL)
-	if err != nil {
-		logger.Error(fmt.Sprintf("Error saving new feed: %s", err.Error()))
-		return err
-	}
-
-	return nil
-}
-
 func rssBuildRSSFeedFromDBRow(row *sql.Rows) types.RSSFeed {
 	var feed types.RSSFeed
-	err := row.Scan(&feed.ID, &feed.Title, &feed.URL)
+	err := row.Scan(&feed.ID, &feed.Title, &feed.URL, &feed.LastUpdated)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error creating feed struct: %s", err.Error()))
 		// TODO : Better error handling
 	}
 	return feed
+}
+
+func rssBuildRSSItemFromDBRow(row *sql.Rows) types.RSSItem {
+	var item types.RSSItem
+	err := row.Scan(&item.ID, &item.FeedID, &item.Title, &item.Description, &item.Content, &item.Link, &item.Updated,
+		&item.Published, &item.Author, &item.GUID, &item.Image, &item.Categories, &item.Enclosures, &item.Read,
+		&item.Starred)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error creating RSS Item struct: %s", err.Error()))
+	}
+	return item
 }

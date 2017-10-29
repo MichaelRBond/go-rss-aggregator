@@ -8,18 +8,12 @@ import (
 
 	"github.com/michaelrbond/go-rss-aggregator/api-responses"
 	"github.com/michaelrbond/go-rss-aggregator/types"
-	"github.com/michaelrbond/go-rss-aggregator/utils"
 )
-
-type apiRegisterPayload struct {
-	Title string
-	URL   string
-}
 
 // RegisterRssFeed registers a RSS feed
 func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *types.Context) {
 	decoder := json.NewDecoder(req.Body)
-	var feed apiRegisterPayload
+	var feed types.RSSFeedBase
 	err := decoder.Decode(&feed)
 
 	if err != nil && err.Error() == "EOF" {
@@ -39,13 +33,7 @@ func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *types.
 		return
 	}
 
-	registerFeed := types.RSSFeed{
-		Title: feed.Title,
-		URL:   feed.URL,
-	}
-
-	err = utils.SaveRSSFeedToDB(context, registerFeed)
-	if err != nil {
+	if err := feed.Save(context); err != nil {
 		response := apiResponses.ErrorInternalServer()
 		apiResponses.Send(response, res)
 		return
@@ -55,7 +43,7 @@ func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *types.
 	apiResponses.Send(response, res)
 }
 
-func verifyPayload(payload apiRegisterPayload) error {
+func verifyPayload(payload types.RSSFeedBase) error {
 	var errs []string
 	if payload.Title == "" {
 		errs = append(errs, "Feed title missing")
