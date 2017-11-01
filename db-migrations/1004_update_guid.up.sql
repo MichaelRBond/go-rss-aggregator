@@ -1,0 +1,1 @@
+ALTER TABLE `feedItems` MODIFY `guid` VARCHAR(500);

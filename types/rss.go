@@ -36,7 +36,11 @@ type RSSFeed struct {
 
 // Save saves an RSSFeed to the database
 func (feed RSSFeed) Save(context *Context) error {
-	// Update the Feed
+	_, err := context.Db.Query("UPDATE `feeds` SET `title`=?, `url`=?, `lastUpdated`=? WHERE `id`=?",
+		feed.Title, feed.URL, feed.LastUpdated, feed.ID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error, %s, while updating feed id=%d", err.Error(), feed.ID))
+	}
 	return nil
 }
 
@@ -63,26 +67,8 @@ func (feed RSSFeed) Download() (*gofeed.Feed, error) {
 // Process processes feed items
 func (feed RSSFeed) Process(context *Context, feedContent *gofeed.Feed) error {
 
-	fmt.Printf("Last Processed feed: %d\n", feed.LastUpdated)
-	fmt.Printf("%s\n", feedContent.Title)
-
 	for _, item := range feedContent.Items {
-		fmt.Printf("\t%s\n", item.Title)
-		fmt.Printf("\t\t%s -- %s\n", item.Published, item.Updated)
-		fmt.Printf("\t\t%v -- %v\n", item.PublishedParsed, item.UpdatedParsed)
-		// fmt.Printf("\t\tdescription: %s\n", item.Description)
-		fmt.Printf("\t\tcontent: %s\n", item.Content)
-		fmt.Printf("\t\tlink: %s\n", item.Link)
-		fmt.Printf("\t\tAuthor: %s\n", item.Author)
-		fmt.Printf("\t\tGUID: %s\n", item.GUID)
-		// fmt.Printf("\t\t%s\n", );
-		// fmt.Printf("\t\t%s\n", );
-		// fmt.Printf("\t\t%s\n", );
-		// fmt.Printf("\t\t%+v\n", item.Extensions)
-
-		// -- determine object time
 		itemTime := rssItemTime(item)
-		fmt.Printf("Itemtime: %d\n", itemTime)
 		if itemTime >= feed.LastUpdated {
 			rssItem := feed.BuildRssItemBase(item)
 			rssItem.Save(context)
@@ -98,19 +84,38 @@ func (feed RSSFeed) Process(context *Context, feedContent *gofeed.Feed) error {
 
 // BuildRssItemBase returns a RSSItemBase from feed item
 func (feed RSSFeed) BuildRssItemBase(item *gofeed.Item) RSSItemBase {
+
+	itemGUID := ""
+	if item.GUID != "" {
+		itemGUID = item.GUID
+	}
+	guid := fmt.Sprintf("%s:%s", itemGUID, item.Link)
+
 	base := RSSItemBase{}
 	base.FeedID = feed.ID
 	base.Title = item.Title
 	base.Description = item.Description
 	base.Content = item.Content
 	base.Link = item.Link
-	base.Updated = int32(item.UpdatedParsed.Unix())
+	if item.UpdatedParsed != nil {
+		base.Updated = int32(item.UpdatedParsed.Unix())
+	} else {
+		base.Updated = 0
+	}
 	base.Published = int32(item.PublishedParsed.Unix())
-	base.Author = item.Author.Name
-	base.GUID = item.GUID
-	base.Image = item.Image.URL
-	// base.Categories = item.Categories // TODO :
-	// base.Enclosures = item.Enclosure // TODO :
+	if item.Author != nil {
+		base.Author = item.Author.Name
+	} else {
+		base.Author = ""
+	}
+	base.GUID = guid
+	if item.Image != nil {
+		base.Image = item.Image.URL
+	} else {
+		base.Image = ""
+	}
+	base.Categories = make([]string, 1, 1) // TODO :
+	base.Enclosures = ""                   // TODO :
 	return base
 }
 
@@ -131,7 +136,34 @@ type RSSItemBase struct {
 }
 
 // Save saves an RSSItemBase to the database
-func (item RSSItemBase) Save(contect *Context) error {
+func (item RSSItemBase) Save(context *Context) error {
+	if rssItem, _ := GetRSSItemByGUID(context, item.GUID); rssItem.ID != 0 {
+		item.Update(context)
+	}
+	// TODO : Save Categories to the database
+	_, err := context.Db.Query("INSERT INTO `feedItems` (`feedId`, `title`, `description`, `content`, `link`, "+
+		"`updated`, `published`, `author`, `guid`, `image`, `enclosures`) "+
+		"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		item.FeedID, item.Title, item.Description, item.Content, item.Link, item.Updated, item.Published,
+		item.Author, item.GUID, item.Image, item.Enclosures)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error, %s, Saving RSSItemBase=%v", err.Error(), item))
+		return err
+	}
+	return nil
+}
+
+// Update updates an RSSItemBase in the database
+func (item RSSItemBase) Update(context *Context) error {
+	_, err := context.Db.Query("UPDATE `feedItems` SET `title`=?, `description`=?, `content`=?, `link`=?, "+
+		"`updated`=?, `published`=?, `author`=?, `image`=?, `categories`=?, `enclosures`=?) WHERE `guid`=?"+
+		"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		item.Title, item.Description, item.Content, item.Link, item.Updated, item.Published,
+		item.Author, item.Image, item.Categories, item.Enclosures, item.GUID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error Updating RSSItemBase=%v", item))
+		return err
+	}
 	return nil
 }
 
