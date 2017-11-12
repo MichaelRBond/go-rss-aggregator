@@ -12,5 +12,8 @@ func DefineRoutes(context *types.Context) *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", types.HTTPHandler{Context: context, H: controllers.DefaultHandler}.ServeHTTP)
 	r.HandleFunc("/api/v1/feeds/add", types.HTTPHandler{Context: context, H: controllers.RegisterRssFeed}.ServeHTTP).Methods("POST")
+	r.HandleFunc("/api/v1/groups/create", types.HTTPHandler{Context: context, H: controllers.GroupCreate}.ServeHTTP).Methods("POST")
+	r.HandleFunc("/api/v1/groups/add", types.HTTPHandler{Context: context, H: controllers.GroupAdd}.ServeHTTP).Methods("POST")
+	r.HandleFunc("/api/fever", types.HTTPHandler{Context: context, H: controllers.FeverAPI}.ServeHTTP).Methods("POST")
 	return r
 }

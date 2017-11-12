@@ -9,10 +9,10 @@ import (
 )
 
 // RegisterRssFeed registers a RSS feed
-func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *types.Context) {
+func GroupAdd(res http.ResponseWriter, req *http.Request, context *types.Context) {
 	decoder := json.NewDecoder(req.Body)
-	var feed types.RSSFeedBase
-	err := decoder.Decode(&feed)
+	var groupAdd types.RSSGroupAdd
+	err := decoder.Decode(&groupAdd)
 
 	if err != nil && err.Error() == "EOF" {
 		response := apiResponses.ErrorBadRequest("Post body not provided.")
@@ -24,18 +24,18 @@ func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *types.
 		return
 	}
 
-	if err := feed.Verify(); err != nil {
+	if err := groupAdd.Verify(); err != nil {
 		response := apiResponses.ErrorBadRequest(err.Error())
 		apiResponses.Send(response, res)
 		return
 	}
 
-	if err := feed.Save(context); err != nil {
+	if err := groupAdd.Save(context); err != nil {
 		response := apiResponses.ErrorInternalServer()
 		apiResponses.Send(response, res)
 		return
 	}
 
-	response := apiResponses.OkMsg("Successfully added RSS feed.")
+	response := apiResponses.OkMsg("Successfully added feed.")
 	apiResponses.Send(response, res)
 }

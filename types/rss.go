@@ -1,8 +1,10 @@
 package types
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/michaelrbond/go-rss-aggregator/logger"
@@ -25,6 +27,24 @@ func (feed RSSFeedBase) Save(context *Context) error {
 	}
 
 	return nil
+}
+
+// Verify validates an RSSFeedBase
+func (feed RSSFeedBase) Verify() error {
+	var errs []string
+	if feed.Title == "" {
+		errs = append(errs, "Feed title missing")
+	}
+	if feed.URL == "" {
+		errs = append(errs, "Feed URL missing")
+	}
+
+	if len(errs) == 0 {
+		return nil
+	}
+
+	errorMsg := strings.Join(errs, ", ")
+	return errors.New(errorMsg)
 }
 
 // RSSFeed describes an RSS feed in saved in the database
@@ -183,4 +203,85 @@ func (item RSSItem) Save(context *Context) error {
 	// if update, update
 
 	return nil
+}
+
+// RSSGroupBase base group struct
+type RSSGroupBase struct {
+	Name string
+}
+
+// Save saves an RSSGroupBase to the database
+func (group RSSGroupBase) Save(context *Context) error {
+	_, err := context.Db.Query("INSERT INTO `groups` (`name`) VALUES(?);", group.Name)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error saving new group: %s", err.Error()))
+		return err
+	}
+	return nil
+}
+
+// Verify ensures that group s valid
+func (group RSSGroupBase) Verify() error {
+	var errs []string
+	if group.Name == "" {
+		errs = append(errs, "Group name missing")
+	}
+
+	if len(errs) == 0 {
+		return nil
+	}
+
+	errorMsg := strings.Join(errs, ", ")
+	return errors.New(errorMsg)
+}
+
+// RSSGroup as saved in the database
+type RSSGroup struct {
+	RSSGroupBase
+	ID int32
+}
+
+// Save updates an RSSGroup in the database
+func (group RSSGroup) Save(context *Context) error {
+	_, err := context.Db.Query("UPDATE `groups` SET `name`=? WHERE `id`=?", group.Name, group.ID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error updating group: %s", err.Error()))
+		return err
+	}
+	return nil
+}
+
+// RSSGroupAdd adds a feed to a group
+type RSSGroupAdd struct {
+	FeedID  int32 `json:"feed_id"`
+	GroupID int32 `json:"group_id"`
+}
+
+// Save saves a feed/group association to the database
+func (groupAdd RSSGroupAdd) Save(context *Context) error {
+	// TODO : Verify that group id and feed id are valid
+	_, err := context.Db.Query("INSERT INTO `feedGroups` (`feedId`, `groupId`) VALUES(?, ?)", groupAdd.FeedID, groupAdd.GroupID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error adding feed/group association: %s", err.Error()))
+	}
+	return nil
+}
+
+// Verify validates an RSSGroupAdd
+func (groupAdd RSSGroupAdd) Verify() error {
+	fmt.Printf("groupAdd: %+v\n", groupAdd)
+	var errs []string
+	if groupAdd.FeedID == 0 {
+		errs = append(errs, "`feed_id` missing")
+	}
+	if groupAdd.GroupID == 0 {
+		errs = append(errs, "`group_id` missing")
+	}
+
+	if len(errs) == 0 {
+		return nil
+	}
+
+	errorMsg := strings.Join(errs, ", ")
+	return errors.New(errorMsg)
 }

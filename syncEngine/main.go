@@ -16,12 +16,10 @@ func SyncRssFeeds(context *types.Context) {
 	}
 
 	for _, feed := range feeds {
-
 		feedContent, err := feed.Download()
 		if err != nil {
 			continue
 		}
-
 		feed.Process(context, feedContent)
 	}
 }

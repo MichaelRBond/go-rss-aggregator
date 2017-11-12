@@ -8,11 +8,11 @@ import (
 	"github.com/michaelrbond/go-rss-aggregator/types"
 )
 
-// RegisterRssFeed registers a RSS feed
-func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *types.Context) {
+// GroupCreate Creates a new group
+func GroupCreate(res http.ResponseWriter, req *http.Request, context *types.Context) {
 	decoder := json.NewDecoder(req.Body)
-	var feed types.RSSFeedBase
-	err := decoder.Decode(&feed)
+	var group types.RSSGroupBase
+	err := decoder.Decode(&group)
 
 	if err != nil && err.Error() == "EOF" {
 		response := apiResponses.ErrorBadRequest("Post body not provided.")
@@ -24,18 +24,18 @@ func RegisterRssFeed(res http.ResponseWriter, req *http.Request, context *types.
 		return
 	}
 
-	if err := feed.Verify(); err != nil {
+	if err := group.Verify(); err != nil {
 		response := apiResponses.ErrorBadRequest(err.Error())
 		apiResponses.Send(response, res)
 		return
 	}
 
-	if err := feed.Save(context); err != nil {
+	if err := group.Save(context); err != nil {
 		response := apiResponses.ErrorInternalServer()
 		apiResponses.Send(response, res)
 		return
 	}
 
-	response := apiResponses.OkMsg("Successfully added RSS feed.")
+	response := apiResponses.OkMsg("Successfully added RSS group.")
 	apiResponses.Send(response, res)
 }
