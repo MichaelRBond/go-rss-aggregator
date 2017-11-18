@@ -29,3 +29,16 @@ type FeverAPIOptions struct {
 	UnreadItemIDs bool
 	SavedItemIDs  bool
 }
+
+// FeverFeedGroups is the Fever API return for feed Groups.
+// -- FeedIDs : A string of FeedIds that belong too the group, comma delmited
+type FeverFeedGroups struct {
+	GroupID int32  `json:"group_id"`
+	FeedIDs string `json:"feed_ids"`
+}
+
+// FeverGroup a FeverAPI group object
+type FeverGroup struct {
+	ID    int32  `json:"id"`
+	Title string `json:"title"`
+}

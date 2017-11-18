@@ -8,7 +8,7 @@ import (
 	"github.com/michaelrbond/go-rss-aggregator/types"
 )
 
-// RegisterRssFeed registers a RSS feed
+// GroupAdd Adds a Feed to a Group
 func GroupAdd(res http.ResponseWriter, req *http.Request, context *types.Context) {
 	decoder := json.NewDecoder(req.Body)
 	var groupAdd types.RSSGroupAdd

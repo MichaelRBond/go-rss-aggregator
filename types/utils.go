@@ -54,3 +54,14 @@ func rssBuildRSSItemFromDBRow(row *sql.Rows) (RSSItem, error) {
 	}
 	return item, nil
 }
+
+// RSSBuildRSSGroupFromDBRow builds a RSSGroup struct from a database row
+func RSSBuildRSSGroupFromDBRow(row *sql.Rows) (RSSGroup, error) {
+	var group RSSGroup
+	err := row.Scan(&group.ID, &group.Name)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error creating RSSGroup struct: %s", err.Error()))
+		return RSSGroup{}, err
+	}
+	return group, nil
+}
