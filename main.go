@@ -30,7 +30,7 @@ func main() {
 	logger.Info(fmt.Sprintf("Listening on port %d", config.Server.Port))
 	go http.ListenAndServe(fmt.Sprintf(":%d", config.Server.Port), nil)
 
-	syncEngineTicker := time.NewTicker(config.SyncEngine.IntervalInSeconds * time.Second * 100000)
+	syncEngineTicker := time.NewTicker(config.SyncEngine.IntervalInSeconds * time.Second)
 	for range syncEngineTicker.C {
 		syncEngine.SyncRssFeeds(context)
 	}

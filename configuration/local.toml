@@ -22,4 +22,4 @@ messageKey = "message"
 levelEncoder = "lowercase"
 
 [syncEngine]
-intervalInSeconds = 10
+intervalInSeconds = 600
